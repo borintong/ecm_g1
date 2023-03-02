@@ -2,6 +2,8 @@
 import "./CustomerPage.css"
 import axios from "axios"
 import {useEffect,useState} from "react"
+import {DatePicker,Button} from "antd"
+
 const CustomerPage = () => {
     // state
     const [list,setList] = useState([])
@@ -42,6 +44,10 @@ const CustomerPage = () => {
 
     return (
         <div className="customer_container">
+            <DatePicker />
+            <Button type="primary">Button Antd</Button>
+            <input type="date" />
+            <button>My Button</button>
             <h1>CustomerPage {list.length}</h1>
             <table>
                 <thead>
