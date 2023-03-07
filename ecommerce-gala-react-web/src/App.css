@@ -1,3 +1,21 @@
+
+.pageTitle{
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.rowBetween{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid gray;
+}
+
+
+
+
 .App {
   text-align: center;
 }

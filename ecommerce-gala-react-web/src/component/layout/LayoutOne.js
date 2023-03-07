@@ -4,95 +4,127 @@ import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  DownOutlined
 } from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
+import { Layout, Menu, Button, theme,Dropdown } from "antd";
 import React, { useState } from "react";
+import {
+  useNavigate
+} from "react-router-dom"
 import "./LayoutOne.css";
 
 const { Header, Sider, Content } = Layout;
 const LayoutOne = (props) => {
+
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate()
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-//   menu = []
+
+  const  handleChangeMenu = (item) => {
+    navigate(item.key)
+  }
+
+  const menu = [
+    {
+      key: "/",
+      icon: <UserOutlined />,
+      label: "Dashboard",
+    },
+    {
+      key: "/customer",
+      icon: <VideoCameraOutlined />,
+      label: "Customer",
+    },
+    {
+      key: "/product",
+      icon: <UploadOutlined />,
+      label: "Product",
+    },
+    {
+      key: "/user",
+      icon: <UploadOutlined />,
+      label: "User",
+    }
+  ]
+
+  const menuUser = [
+    {
+      key : "1",
+      label : (
+          <a>
+            Profile
+          </a>
+      )
+    },
+    {
+      key : "2",
+      label : (
+        <a>
+          Change password
+        </a>
+      )
+    },
+    {
+      key : "3",
+      label : (
+        <a>
+          Logout
+        </a>
+      )
+    },
+  ]
+
+
   return (
     <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="logo" />
+
+      <Sider  trigger={null} collapsible collapsed={collapsed}>
+        <div className="logoLayoutOne">
+          <div className={`${collapsed ? "profileContainAnimate" : "profileContain"}`}>
+            ECM Backend
+          </div>
+        </div>
         <Menu
           theme="dark"
           mode="inline"
           defaultSelectedKeys={["2"]}
-          items={[
-            {
-              key: "1",
-              icon: <UserOutlined />,
-              label: "Dashboard",
-            },
-            {
-              key: "2",
-              icon: <VideoCameraOutlined />,
-              label: "Customer",
-            },
-            {
-              key: "3",
-              icon: <UploadOutlined />,
-              label: "Product",
-            },
-            {
-              key: "4",
-              icon: <UploadOutlined />,
-              label: "Product",
-            }
-          ]}
+          items={menu}
+          onClick={handleChangeMenu}
         />
       </Sider>
 
-      <Layout className="site-layout">
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-          }}
-        >
-        <div
-            style={{
-                display:"flex",
-                flexDirection:"row",
-                alignItems : "center",
-                justifyContent:"space-between"
-            }}
-        >
+      <Layout>
+        <div className="headerLayoutOne">
             <MenuUnfoldOutlined
                 style={{fontSize:26,paddingLeft:20}}
                 onClick={()=>setCollapsed(!collapsed)}
             />
-            <div
-                style={{
-                    paddingRight:10,
-                }}
-            >
-                <div>
-                    Dara
-                </div>
+            <div>
+                <Dropdown
+                  style={{width:150}}
+                  menu={{
+                    items:menuUser
+                  }}
+                  placement="bottomLeft"
+                >
+                  <Button type="link" className={"iconProfile"}>
+                    <UserOutlined />
+                    {"SOKHA"}
+                    <DownOutlined/>
+                  </Button>
+                </Dropdown>
             </div>
         </div>
-        </Header>
-        <Content
-          style={{
-            margin: "24px 16px",
-            padding: 24,
-            minHeight: 280,
-            background: colorBgContainer,
-            height:"90vh"
-          }}
-        >
-          <div>Block content</div>  
-          {props.childreen}
-        </Content>
+        <div className="mainBody">
+          {props.children}
+        </div>
       </Layout>
+      
     </Layout>
   );
+
 };
 export default LayoutOne;

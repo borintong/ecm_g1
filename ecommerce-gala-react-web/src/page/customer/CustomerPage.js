@@ -2,17 +2,13 @@
 import "./CustomerPage.css"
 import axios from "axios"
 import {useEffect,useState} from "react"
-import {DatePicker,Button} from "antd"
+import {DatePicker,Button,Space,Popconfirm, Input} from "antd"
+import {DeleteFilled,EditFilled,SaveFilled,FilterOutlined} from "@ant-design/icons"
 
 const CustomerPage = () => {
-    // state
+
     const [list,setList] = useState([])
-
-
-    // const [name,setName] = useState("")
-    // const [productName,setProductName] = useState("")
-    // const [average,setAverage] = useState(0.0)
-
+    
     useEffect(()=>{
         getList();// call funcion getList
     },[])
@@ -31,9 +27,9 @@ const CustomerPage = () => {
         })
     }
 
-    const onDelete = (item) => {
+    const onConfirmDelete = (id) => {
         axios({
-            url : "http://localhost:8080/api/customer/delete/"+item.customer_id,
+            url : "http://localhost:8080/api/customer/delete/"+id,
             method : "DELETE",
         }).then(res=>{
             getList()
@@ -43,12 +39,19 @@ const CustomerPage = () => {
     }
 
     return (
-        <div className="customer_container">
-            <DatePicker />
-            <Button type="primary">Button Antd</Button>
-            <input type="date" />
-            <button>My Button</button>
-            <h1>CustomerPage {list.length}</h1>
+        <div>
+            <div className="rowBetween">
+                <div>
+                    <Space>
+                        <div className="pageTitle">Customer</div>
+                        <Input.Search placeholder="Search" />
+                        <DatePicker  />
+                        <DatePicker  />
+                        <Button type="primary" ><FilterOutlined/></Button>
+                    </Space>
+                </div>
+                <Button type="primary"><SaveFilled/> Create New</Button>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -73,43 +76,39 @@ const CustomerPage = () => {
                                     <td className="td-left">{item.email}</td>
                                     <td className="td-left">{item.tel}</td>
                                     <td>
-                                        <button onClick={()=>onDelete(item)}>Delete</button>
-                                        <button>Edit</button>
+                                        <Space>
+                                            <Popconfirm
+                                                placement="topRight"
+                                                title={"Delete"}
+                                                description={"Are sure to remove this customer"}
+                                                onConfirm={()=>onConfirmDelete(item.customer_id)}
+                                                okText="Delete"
+                                                cancelText="No"
+                                            >
+                                                <Button
+                                                    danger={true} 
+                                                    size="small" 
+                                                >
+                                                    <DeleteFilled/>
+                                                </Button>
+                                            </Popconfirm>
+
+                                            <Button
+                                                size="small" 
+                                                type="primary"
+                                            >
+                                                <EditFilled/>
+                                            </Button>
+                                        </Space>
                                     </td>
                                 </tr>
                             )
                         })
                     }
 
-                    {/* {list.map((item,index)=>{
-                        return (
-                            <tr>
-                                <td className="td-left">{item.customer_id}</td>
-                                <td className="td-left">{item.firstname}</td>
-                                <td className="td-left">{item.lastname}</td>
-                                <td className="td-left">{item.gender}</td>
-                                <td className="td-left">{item.email}</td>
-                                <td className="td-left">{item.tel}</td>
-                                <td>
-                                    <button>Delete</button>
-                                    <button>Edit</button>
-                                </td>
-                            </tr>
-                        )
-                    })} */}
+                    
                 </tbody>
             </table>
-            {/* <div>
-                {list.map((item,index)=>{
-                    return (
-                        <div style={{marginBottom:30,borderBottom:"1px solid #000",padding:10}}>
-                            <div>{index+1}</div>
-                            <div>{item.firstname}</div>
-                            <div>{item.lastname}</div>
-                        </div>
-                    )
-                })}
-            </div> */}
         </div>
     )
 }
