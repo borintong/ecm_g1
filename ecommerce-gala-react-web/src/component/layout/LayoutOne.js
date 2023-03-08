@@ -6,7 +6,7 @@ import {
   VideoCameraOutlined,
   DownOutlined
 } from "@ant-design/icons";
-import { Layout, Menu, Button, theme,Dropdown } from "antd";
+import { Layout, Menu, Button, theme,Dropdown, Divider } from "antd";
 import React, { useState } from "react";
 import {
   useNavigate
@@ -82,10 +82,14 @@ const LayoutOne = (props) => {
     <Layout>
 
       <Sider  trigger={null} collapsible collapsed={collapsed}>
-        <div className="logoLayoutOne">
-          <div className={`${collapsed ? "profileContainAnimate" : "profileContain"}`}>
-            ECM Backend
+        {/* <div className="logoLayoutOne1">
+          <div className={`${collapsed ? "profileContainAnimate1" : "profileContain1"}`}>
+            ECM
           </div>
+        </div> */}
+        <div>
+          <h1 style={{textAlign:"center",color:"#FFF"}}>ECM</h1>
+          <hr style={{color:"#FFF"}} />
         </div>
         <Menu
           theme="dark"
