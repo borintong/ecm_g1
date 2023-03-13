@@ -27,3 +27,6 @@
             )
         }
         export default HomePage 
+# Install moment 
+
+    > npm install moment

@@ -3,7 +3,11 @@ import "./CustomerPage.css"
 import axios from "axios"
 import {useEffect,useState} from "react"
 import {DatePicker,Button,Space,Popconfirm, Input, Modal, Divider, Select, Radio} from "antd"
-import {DeleteFilled,EditFilled,SaveFilled,FilterOutlined} from "@ant-design/icons"
+import {DeleteFilled,EditFilled,SaveFilled,FilterOutlined, CompassOutlined} from "@ant-design/icons"
+import moment from "moment"
+import { request } from "../../util/api"
+// import { request } from "../../util/api"
+
 const {Option} = Select
 const CustomerPage = () => {
 
@@ -17,6 +21,7 @@ const CustomerPage = () => {
     const [tel,setTel] = useState("")
     const [email,setEmail] = useState("")
     const [isActive,setIsActive] = useState(1)
+    const [customerId,setCustomerID] = useState(null)
 
     
 
@@ -27,27 +32,15 @@ const CustomerPage = () => {
 
     // create a function fetch data from api
     const getList = () => {
-        axios({
-            url : "http://localhost:8080/api/customer/getList",
-            method : "GET",
-            // data : {} // json body params
-        }).then(res=>{
+        request("get","customer/getList").then(res=>{
             setList(res.data.list_customer)
-            console.log(res.data.total)
         }).catch(err=>{
             console.log(err)
         })
     }
 
     const onConfirmDelete = (id) => {
-        axios({
-            url : "http://localhost:8080/api/customer/delete/"+id,
-            method : "DELETE",
-        }).then(res=>{
-            getList()
-        }).catch(err=>{
-            console.log(err)
-        })
+        request("delete","customer/delete/"+id).then(res=>{getList()})
     }
 
     const handleCancel = () => {
@@ -55,10 +48,23 @@ const CustomerPage = () => {
     }
 
     const handSubmit = () => {
-        axios({
-            url : "http://localhost:8080/api/customer/create",
-            method : "post",
-            data : {
+        if(customerId == null){
+            request("post","customer/create",{
+                "firstname":firstname,
+                    "lastname":lastname,
+                    "gender" : gender,
+                    "dob" : dob, 
+                    "tel" : tel,
+                    "email" : email,
+                    "is_active" : isActive
+            }).then(res=>{
+                getList()
+                clearForm()
+                setVisibleModal(false)
+            })
+        }else{
+            request("put","customer/update",{
+                "customer_id" : customerId,
                 "firstname":firstname,
                 "lastname":lastname,
                 "gender" : gender,
@@ -66,15 +72,13 @@ const CustomerPage = () => {
                 "tel" : tel,
                 "email" : email,
                 "is_active" : isActive
-            }
-        }).then(res=>{
-            
-            getList()
-            clearForm()
-            setVisibleModal(false)
-        }).catch(err=>{
-            console.log(err)
-        })
+            }).then(res=>{
+                getList()
+                clearForm()
+                setVisibleModal(false)
+            })
+        }
+       
     }
 
     const clearForm = () => {
@@ -85,6 +89,7 @@ const CustomerPage = () => {
         setTel("")
         setEmail("")
         setIsActive(1)
+        setCustomerID(null)
     }
 
     const handleCloseModal = () => {
@@ -94,6 +99,20 @@ const CustomerPage = () => {
 
     const handleOpenModal = () => {
         setVisibleModal(true)
+        
+    }
+
+    const handleClickEdit = (item,index) => {
+        setVisibleModal(true)
+
+        setFirstname(item.firstname)
+        setLastname(item.lastname)
+        setGender(item.gender+"")
+        setDob(item.dob+"")
+        setTel(item.tel)
+        setEmail(item.email)
+        setIsActive(item.is_active)
+        setCustomerID(item.customer_id)
     }
 
     return (
@@ -132,7 +151,7 @@ const CustomerPage = () => {
                                     <td className="td-left">{item.firstname}</td>
                                     <td className="td-left">{item.lastname}</td>
                                     <td className="td-left">{item.gender}</td>
-                                    <td className="td-left">{item.dob}</td>
+                                    <td className="td-left">{moment(item.dob).format("DD/MM/YYYY")}</td>
                                     <td className="td-left">{item.email}</td>
                                     <td className="td-left">{item.tel}</td>
                                     <td>
@@ -156,6 +175,7 @@ const CustomerPage = () => {
                                             <Button
                                                 size="small" 
                                                 type="primary"
+                                                onClick={()=>handleClickEdit(item,index)}
                                             >
                                                 <EditFilled/>
                                             </Button>
@@ -171,10 +191,10 @@ const CustomerPage = () => {
             </table>
             <Modal
                 open={visibleModal}
-                title="New customer"
+                title={customerId == null ? "New customer" : "Update customer"}
                 onCancel={handleCloseModal}
                 footer={null}
-                
+                maskClosable={false}
             >
                 <div>date {dob+""}</div>
                 {/* <div>
@@ -213,6 +233,8 @@ const CustomerPage = () => {
                     </Select>
                     <DatePicker 
                         // picker="year" 
+                        // format={'YYYY/MM/DD'}
+                        // defaultValue={moment()}
                         style={{width:"100%"}}
                         placeholder="Date of birth"
                         // value={dob}
@@ -251,7 +273,7 @@ const CustomerPage = () => {
 
                     <Space style={{display:'flex',justifyContent:"flex-end"}}>
                         <Button onClick={handleCancel}>Cancel</Button>
-                        <Button onClick={handSubmit} type="primary">Save</Button>
+                        <Button onClick={handSubmit} type="primary">{customerId == null ? "Save" : "Update"}</Button>
                     </Space>
                 </Space>
             </Modal>
