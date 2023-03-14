@@ -1,4 +1,5 @@
 import axios from "axios"
+import { message } from "antd"
 const baseUrl = "http://localhost:8080/api/"
 
 export const request = (method="",url="",data={}) => {
@@ -10,7 +11,10 @@ export const request = (method="",url="",data={}) => {
     }).then(res=>{
         return res
     }).catch(err=>{
-        console.log(err)
-        return err
+        if(err.code == "ERR_NETWORK"){
+            message.error("Can not connect to server. Plase contact administration!")
+            return false
+        }
+        return false
     })
 }
